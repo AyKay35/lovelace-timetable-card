@@ -2,10 +2,11 @@
  * Timetable Card for Home Assistant
  * https://github.com/ay-kay/lovelace-timetable-card
  * @license MIT
- * @version 1.1.1
+ * @version 1.1.2
  */
 
-const CARD_VERSION = "1.1.1";
+const CARD_VERSION = "1.1.2";
+const STORAGE_KEY  = "timetable_card_kids_v1";
 console.info(
   `%c TIMETABLE-CARD %c v${CARD_VERSION} `,
   "background:#60a5fa;color:white;font-weight:900;padding:2px 4px;border-radius:4px 0 0 4px",
@@ -412,8 +413,20 @@ class TimetableCard extends HTMLElement {
 
   setConfig(config) {
     this._config   = config;
-    this._kids     = JSON.parse(JSON.stringify(config.kids     || DEFAULT_KIDS));
     this._subjects = buildSubjectMap(config.subjects || DEFAULT_SUBJECTS);
+
+    // Priority: 1) localStorage  2) config.kids  3) DEFAULT_KIDS
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) {
+        this._kids = JSON.parse(stored);
+      } else {
+        this._kids = JSON.parse(JSON.stringify(config.kids || DEFAULT_KIDS));
+      }
+    } catch (_) {
+      this._kids = JSON.parse(JSON.stringify(config.kids || DEFAULT_KIDS));
+    }
+
     this._render();
   }
 
@@ -429,10 +442,15 @@ class TimetableCard extends HTMLElement {
   /* ── Save ─────────────────────────────────────── */
 
   _saveConfig() {
+    // Primary: localStorage — survives HACS updates, instant, no HA dependency
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(this._kids)); } catch (_) {}
+
+    // Secondary: config-changed — keeps HA YAML in sync as bonus backup
     this.dispatchEvent(new CustomEvent("config-changed", {
       detail: { config: { ...this._config, kids: this._kids } },
       bubbles: true, composed: true,
     }));
+
     this._showSaved = true;
     clearTimeout(this._savedTimer);
     this._savedTimer = setTimeout(() => { this._showSaved = false; this._render(); }, 1800);
@@ -717,7 +735,7 @@ class TimetableCard extends HTMLElement {
     if (!el || el.dataset.action !== "import-file") return;
     const file = el.files[0]; if (!file) return;
     const r = new FileReader();
-    r.onload = ev => { try { this._kids = JSON.parse(ev.target.result); this._saveConfig(); } catch (_) {} };
+    r.onload = ev => { try { this._kids = JSON.parse(ev.target.result); localStorage.setItem(STORAGE_KEY, JSON.stringify(this._kids)); this._saveConfig(); } catch (_) {} };
     r.readAsText(file); el.value = "";
   }
 
