@@ -1,0 +1,7 @@
+{
+  "name": "Stundenplan Card",
+  "description": "An interactive family timetable card for Home Assistant. Manage school schedules for multiple children with drag & drop editing.",
+  "render_readme": true,
+  "filename": "timetable-card.js",
+  "content_in_root": true
+}
