@@ -2,78 +2,67 @@
  * Timetable Card for Home Assistant
  * https://github.com/ay-kay/lovelace-timetable-card
  * @license MIT
+ * @version 1.1.0
  */
+
+const CARD_VERSION = "1.1.0";
+console.info(
+  `%c TIMETABLE-CARD %c v${CARD_VERSION} `,
+  "background:#60a5fa;color:white;font-weight:900;padding:2px 4px;border-radius:4px 0 0 4px",
+  "background:#1d4ed8;color:white;font-weight:700;padding:2px 4px;border-radius:0 4px 4px 0"
+);
 
 /* ═══════════════════════════════════════════════════
    SUBJECT HELPERS
-   Subjects come from config.subjects in YAML.
-   Each subject needs only a name + one color —
-   lighter bg and border tones are computed automatically.
 ═══════════════════════════════════════════════════ */
-
-const CARD_VERSION = "1.0.0";
-console.info(`%c TIMETABLE-CARD %c v${CARD_VERSION} `, "background:#60a5fa;color:white;font-weight:900", "background:#1d4ed8;color:white;font-weight:700");
-
-/** Parse a hex color string to RGB components */
 function hexToRgb(hex) {
   const h = hex.replace("#", "");
-  const full = h.length === 3
-    ? h.split("").map(c => c + c).join("")
-    : h;
+  const full = h.length === 3 ? h.split("").map(c => c + c).join("") : h;
   const n = parseInt(full, 16);
   return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 };
 }
-
-/** Mix a color with white at a given ratio (0=original, 1=white) */
 function lighten(hex, ratio) {
   const { r, g, b } = hexToRgb(hex);
-  const mix = (c) => Math.round(c + (255 - c) * ratio);
-  const toHex = (c) => mix(c).toString(16).padStart(2, "0");
-  return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+  const mix  = c => Math.round(c + (255 - c) * ratio);
+  const toHx = c => mix(c).toString(16).padStart(2, "0");
+  return `#${toHx(r)}${toHx(g)}${toHx(b)}`;
 }
-
-/** Build a full subject style object from a single color */
 function buildSubjectStyle(color) {
-  return {
-    bg:     lighten(color, 0.82),
-    text:   color,
-    border: lighten(color, 0.55),
-  };
+  return { bg: lighten(color, 0.82), text: color, border: lighten(color, 0.55) };
 }
-
-/** Build a lookup map from config.subjects array */
 function buildSubjectMap(subjects = []) {
   const map = {};
   for (const s of subjects) {
-    if (!s.name || !s.color) continue;
-    map[s.name] = buildSubjectStyle(s.color);
+    if (s.name && s.color) map[s.name] = buildSubjectStyle(s.color);
   }
   return map;
 }
-
 const FALLBACK_STYLE = { bg: "#f1f5f9", text: "#475569", border: "#cbd5e1" };
 
 /* ═══════════════════════════════════════════════════
-   DEFAULT CONFIG  –  shown when card is first added
+   DEFAULT CONFIG
 ═══════════════════════════════════════════════════ */
 const DEFAULT_SUBJECTS = [
-  { name: "Mathe",       color: "#1d4ed8" },
-  { name: "Deutsch",     color: "#854d0e" },
-  { name: "Englisch",    color: "#065f46" },
-  { name: "Sport",       color: "#5b21b6" },
-  { name: "Musik",       color: "#991b1b" },
-  { name: "Kunst",       color: "#9d174d" },
-  { name: "Sachkunde",   color: "#0f766e" },
-  { name: "Religion",    color: "#9a3412" },
-  { name: "Geschichte",  color: "#9f1239" },
-  { name: "Biologie",    color: "#166534" },
-  { name: "Physik",      color: "#075985" },
-  { name: "Chemie",      color: "#92400e" },
-  { name: "Französisch", color: "#6b21a8" },
-  { name: "Informatik",  color: "#3730a3" },
-  { name: "KlaRa",       color: "#7e22ce" },
-  { name: "LZ",          color: "#14532d" },
-  { name: "Coach",       color: "#881337" },
+  { name: "Mathe",        color: "#1d4ed8" },
+  { name: "Deutsch",      color: "#854d0e" },
+  { name: "Englisch",     color: "#065f46" },
+  { name: "Sport",        color: "#5b21b6" },
+  { name: "Musik",        color: "#991b1b" },
+  { name: "Kunst",        color: "#9d174d" },
+  { name: "Sachkunde",    color: "#0f766e" },
+  { name: "Religion",     color: "#9a3412" },
+  { name: "Geschichte",   color: "#9f1239" },
+  { name: "Biologie",     color: "#166534" },
+  { name: "Physik",       color: "#075985" },
+  { name: "Chemie",       color: "#92400e" },
+  { name: "Französisch",  color: "#6b21a8" },
+  { name: "Informatik",   color: "#3730a3" },
+  { name: "KlaRa",        color: "#7e22ce" },
+  { name: "LZ",           color: "#14532d" },
+  { name: "Coach",        color: "#881337" },
+  { name: "Ethik",        color: "#0369a1" },
+  { name: "Geographie",   color: "#15803d" },
+  { name: "Werken",       color: "#b45309" },
 ];
 
 const DEFAULT_KIDS = [
@@ -90,9 +79,6 @@ const DEFAULT_KIDS = [
   },
 ];
 
-/* ═══════════════════════════════════════════════════
-   KID COLOR PRESETS & EMOJIS
-═══════════════════════════════════════════════════ */
 const COLOR_PRESETS = [
   { color: "#f87171", accent: "#b91c1c", light: "#fff1f2" },
   { color: "#f472b6", accent: "#be185d", light: "#fdf2f8" },
@@ -104,211 +90,92 @@ const COLOR_PRESETS = [
   { color: "#2dd4bf", accent: "#0f766e", light: "#f0fdfa" },
 ];
 const EMOJIS = ["⚡","🌸","⭐","🚀","🦋","🌿","🎯","🎨","🏆","🦊","🐬","🌈","🎸","🦄","🏄","🎭"];
-
-const DAYS       = ["Mo", "Di", "Mi", "Do", "Fr"];
-const DAY_LABELS = ["Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag"];
+const DAYS       = ["Mo","Di","Mi","Do","Fr"];
+const DAY_LABELS = ["Montag","Dienstag","Mittwoch","Donnerstag","Freitag"];
 
 /* ═══════════════════════════════════════════════════
-   STYLES
+   CARD STYLES
 ═══════════════════════════════════════════════════ */
-const STYLES = `
+const CARD_STYLES = `
   @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
-  :host { display: block; font-family: 'Nunito', var(--paper-font-common-base_-_font-family, sans-serif); }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :host { display:block; font-family:'Nunito',var(--paper-font-common-base_-_font-family,sans-serif); }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+  .fade-in { animation:fadeIn 0.25s ease forwards; }
 
-  @keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
-  .fade-in { animation: fadeIn 0.25s ease forwards; }
-
-  .card {
-    background: var(--card-background-color, #fff);
-    border-radius: var(--ha-card-border-radius, 12px);
-    overflow: hidden;
-    box-shadow: var(--ha-card-box-shadow, 0 2px 12px rgba(0,0,0,0.08));
-  }
+  .card { background:var(--card-background-color,#fff); border-radius:var(--ha-card-border-radius,12px); overflow:hidden; box-shadow:var(--ha-card-box-shadow,0 2px 12px rgba(0,0,0,0.08)); }
 
   /* Header */
-  .header { background: var(--card-background-color,#fff); border-bottom: 2px solid var(--divider-color,#e2e8f0); transition: border-color 0.3s; }
-  .header.edit-mode { border-bottom-color: var(--kid-color,#60a5fa); }
-  .tabs { display: flex; align-items: stretch; }
-
-  .tab {
-    flex:1; padding: 11px 6px 13px;
-    background: var(--secondary-background-color,#f8fafc);
-    border: none; border-bottom: 3px solid transparent;
-    cursor: pointer; display: flex; align-items: center; gap: 7px; justify-content: center;
-    font-family: inherit; transition: all 0.18s; position: relative;
-  }
-  .tab:hover { filter: brightness(0.97); }
-  .tab.active { background: var(--kid-light,#eff6ff); border-bottom-color: var(--kid-color,#60a5fa); }
-
-  .tab-avatar {
-    width:30px; height:30px; border-radius:50%;
-    background: var(--disabled-color,#e2e8f0);
-    display:flex; align-items:center; justify-content:center;
-    font-size:15px; flex-shrink:0; transition: all 0.2s;
-  }
-  .tab.active .tab-avatar {
-    background: linear-gradient(135deg, var(--kid-color), var(--kid-accent));
-    box-shadow: 0 2px 8px color-mix(in srgb, var(--kid-color) 55%, transparent);
-  }
-
+  .header { background:var(--card-background-color,#fff); border-bottom:2px solid var(--divider-color,#e2e8f0); transition:border-color 0.3s; }
+  .header.edit-mode { border-bottom-color:var(--kid-color,#60a5fa); }
+  .tabs { display:flex; align-items:stretch; }
+  .tab { flex:1; padding:11px 6px 13px; background:var(--secondary-background-color,#f8fafc); border:none; border-bottom:3px solid transparent; cursor:pointer; display:flex; align-items:center; gap:7px; justify-content:center; font-family:inherit; transition:all 0.18s; position:relative; }
+  .tab:hover { filter:brightness(0.97); }
+  .tab.active { background:var(--kid-light,#eff6ff); border-bottom-color:var(--kid-color,#60a5fa); }
+  .tab-avatar { width:30px; height:30px; border-radius:50%; background:var(--disabled-color,#e2e8f0); display:flex; align-items:center; justify-content:center; font-size:15px; flex-shrink:0; transition:all 0.2s; }
+  .tab.active .tab-avatar { background:linear-gradient(135deg,var(--kid-color),var(--kid-accent)); box-shadow:0 2px 8px color-mix(in srgb,var(--kid-color) 55%,transparent); }
   .tab-name { font-size:13px; font-weight:900; color:var(--secondary-text-color,#94a3b8); text-align:left; }
   .tab-age  { font-size:10px; font-weight:700; color:var(--disabled-color,#b0bec5); }
-  .tab.active .tab-name { color: var(--kid-accent,#1d4ed8); }
+  .tab.active .tab-name { color:var(--kid-accent,#1d4ed8); }
+  .tab-edit-btn { position:absolute; top:6px; right:5px; width:18px; height:18px; border-radius:50%; border:none; background:var(--kid-color,#60a5fa); color:white; font-size:9px; cursor:pointer; font-weight:900; display:flex; align-items:center; justify-content:center; }
+  .tab-add { padding:11px 16px 13px; border:none; border-left:1px solid var(--divider-color,#f1f5f9); border-bottom:3px solid transparent; background:var(--secondary-background-color,#f8fafc); color:var(--secondary-text-color,#94a3b8); font-size:22px; font-weight:900; cursor:pointer; font-family:inherit; }
+  .pencil-wrap { display:flex; align-items:center; padding:0 12px; border-left:1px solid var(--divider-color,#f1f5f9); background:var(--secondary-background-color,#f8fafc); flex-shrink:0; }
+  .pencil-btn { width:36px; height:36px; border-radius:10px; border:none; background:var(--disabled-color,#e2e8f0); color:var(--secondary-text-color,#64748b); font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.2s; }
+  .pencil-btn.active { background:var(--kid-color,#60a5fa); color:white; font-size:15px; box-shadow:0 2px 10px color-mix(in srgb,var(--kid-color) 55%,transparent); }
 
-  .tab-edit-btn {
-    position:absolute; top:6px; right:5px;
-    width:18px; height:18px; border-radius:50%; border:none;
-    background:var(--kid-color,#60a5fa); color:white;
-    font-size:9px; cursor:pointer; font-weight:900;
-    display:flex; align-items:center; justify-content:center;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.25);
-  }
-  .tab-add {
-    padding: 11px 16px 13px; border:none;
-    border-left: 1px solid var(--divider-color,#f1f5f9);
-    border-bottom: 3px solid transparent;
-    background: var(--secondary-background-color,#f8fafc);
-    color: var(--secondary-text-color,#94a3b8);
-    font-size:22px; font-weight:900; cursor:pointer; font-family:inherit;
-  }
-
-  .pencil-wrap {
-    display:flex; align-items:center; padding: 0 12px;
-    border-left: 1px solid var(--divider-color,#f1f5f9);
-    background: var(--secondary-background-color,#f8fafc); flex-shrink:0;
-  }
-  .pencil-btn {
-    width:36px; height:36px; border-radius:10px; border:none;
-    background:var(--disabled-color,#e2e8f0); color:var(--secondary-text-color,#64748b);
-    font-size:16px; cursor:pointer;
-    display:flex; align-items:center; justify-content:center; transition: all 0.2s;
-  }
-  .pencil-btn.active {
-    background:var(--kid-color,#60a5fa); color:white; font-size:15px;
-    box-shadow: 0 2px 10px color-mix(in srgb, var(--kid-color) 55%, transparent);
-  }
-
-  .status-bar {
-    display:flex; align-items:center; justify-content:space-between;
-    padding: 4px 14px 6px;
-    border-top: 1px solid color-mix(in srgb, var(--kid-color,#60a5fa) 33%, transparent);
-    background: color-mix(in srgb, var(--kid-color,#60a5fa) 10%, transparent);
-  }
+  /* Status bar */
+  .status-bar { display:flex; align-items:center; justify-content:space-between; padding:4px 14px 6px; border-top:1px solid color-mix(in srgb,var(--kid-color,#60a5fa) 33%,transparent); background:color-mix(in srgb,var(--kid-color,#60a5fa) 10%,transparent); }
   .status-text { font-size:11px; font-weight:800; color:var(--secondary-text-color); }
   .status-text.saved { color:#4ade80; }
   .status-actions { display:flex; gap:8px; }
-  .status-btn {
-    padding:3px 10px; border-radius:8px; border:none;
-    background:var(--divider-color,#e2e8f0); color:var(--secondary-text-color,#475569);
-    font-size:11px; font-weight:800; cursor:pointer; font-family:inherit;
-  }
+  .status-btn { padding:3px 10px; border-radius:8px; border:none; background:var(--divider-color,#e2e8f0); color:var(--secondary-text-color,#475569); font-size:11px; font-weight:800; cursor:pointer; font-family:inherit; }
 
   /* Table */
-  .table-wrap { padding: 14px 14px 18px; overflow-x: auto; }
+  .table-wrap { padding:14px 14px 18px; overflow-x:auto; }
   table { width:100%; border-collapse:collapse; background:var(--card-background-color,white); border-radius:12px; overflow:hidden; box-shadow:0 1px 8px rgba(0,0,0,0.05); }
-
-  .th-corner {
-    width:80px; background:var(--secondary-background-color,#f8fafc);
-    border-right:2px solid var(--divider-color,#e2e8f0);
-    border-bottom:2px solid var(--divider-color,#e2e8f0);
-  }
-  .th-day {
-    padding:11px 6px; text-align:center;
-    background:var(--secondary-background-color,#f8fafc);
-    border-bottom:2px solid var(--divider-color,#e2e8f0);
-  }
+  .th-corner { width:80px; background:var(--secondary-background-color,#f8fafc); border-right:2px solid var(--divider-color,#e2e8f0); border-bottom:2px solid var(--divider-color,#e2e8f0); }
+  .th-day { padding:11px 6px; text-align:center; background:var(--secondary-background-color,#f8fafc); border-bottom:2px solid var(--divider-color,#e2e8f0); }
   .th-day.today { background:color-mix(in srgb,var(--kid-color,#60a5fa) 18%,transparent); border-bottom-color:var(--kid-color,#60a5fa); }
   .th-day:not(:last-child) { border-right:1px solid color-mix(in srgb,var(--divider-color,#e2e8f0) 80%,transparent); }
-
   .day-label { font-size:12.5px; font-weight:900; color:var(--secondary-text-color,#475569); }
   .th-day.today .day-label { color:var(--kid-accent,#1d4ed8); }
   .today-dot { width:5px; height:5px; border-radius:50%; background:var(--kid-color,#60a5fa); margin:4px auto 0; box-shadow:0 0 5px var(--kid-color,#60a5fa); }
-
-  .td-time {
-    padding:8px; background:var(--secondary-background-color,#f8fafc);
-    border-right:2px solid var(--divider-color,#e2e8f0);
-    vertical-align:middle; text-align:center;
-  }
-  .slot-num {
-    width:19px; height:19px; border-radius:50%;
-    background:var(--divider-color,#e2e8f0); color:var(--secondary-text-color,#64748b);
-    font-weight:900; font-size:10px; margin:0 auto 2px;
-    display:flex; align-items:center; justify-content:center;
-  }
+  .td-time { padding:8px; background:var(--secondary-background-color,#f8fafc); border-right:2px solid var(--divider-color,#e2e8f0); vertical-align:middle; text-align:center; }
+  .slot-num { width:19px; height:19px; border-radius:50%; background:var(--divider-color,#e2e8f0); color:var(--secondary-text-color,#64748b); font-weight:900; font-size:10px; margin:0 auto 2px; display:flex; align-items:center; justify-content:center; }
   .slot-time { font-size:9.5px; font-weight:800; color:var(--secondary-text-color,#64748b); line-height:1; }
   .slot-end  { font-size:9px; color:var(--disabled-color,#94a3b8); font-weight:600; }
-
   .td-subject { padding:6px 5px; vertical-align:middle; text-align:center; min-width:82px; }
   .td-subject:not(:last-child) { border-right:1px solid color-mix(in srgb,var(--divider-color,#e2e8f0) 60%,transparent); }
   .td-subject.today-col     { background:color-mix(in srgb,var(--kid-color,#60a5fa) 10%,transparent); }
   .td-subject.today-col.alt { background:color-mix(in srgb,var(--kid-color,#60a5fa) 14%,transparent); }
-
   .row-even  { background:var(--card-background-color,white); }
   .row-odd   { background:color-mix(in srgb,var(--secondary-background-color,#f8fafc) 60%,transparent); }
   .row-break  td { border-bottom:2px dashed var(--divider-color,#e2e8f0) !important; }
   .row-normal td { border-bottom:1px solid color-mix(in srgb,var(--divider-color,#f0f4f8) 60%,transparent); }
   .row-last   td { border-bottom:none !important; }
 
-  .chip {
-    border-radius:7px; padding:5px 4px;
-    font-size:12px; font-weight:800; line-height:1.2;
-    position:relative; user-select:none; border:1.5px solid transparent;
-  }
+  /* Chips */
+  .chip { border-radius:7px; padding:5px 4px; font-size:12px; font-weight:800; line-height:1.2; position:relative; user-select:none; border:1.5px solid transparent; }
   .chip.draggable { cursor:grab; }
   .chip.draggable:active { cursor:grabbing; }
-
-  .chip-remove {
-    position:absolute; top:-5px; right:-5px;
-    width:15px; height:15px; border-radius:50%;
-    background:#ef4444; color:white;
-    font-size:9px; font-weight:900; cursor:pointer;
-    display:flex; align-items:center; justify-content:center;
-    box-shadow:0 1px 4px rgba(0,0,0,0.25); border:none;
-  }
-
-  .cell-empty {
-    border-radius:7px; padding:8px 4px;
-    font-size:18px; font-weight:900;
-    border:1.5px dashed var(--divider-color,#d1d5db);
-    color:var(--divider-color,#d1d5db); transition:all 0.15s;
-  }
-  .cell-empty.droptarget {
-    border-color:var(--kid-color,#60a5fa); color:var(--kid-color,#60a5fa);
-    background:color-mix(in srgb,var(--kid-color,#60a5fa) 8%,transparent);
-  }
+  .chip-remove { position:absolute; top:-5px; right:-5px; width:15px; height:15px; border-radius:50%; background:#ef4444; color:white; font-size:9px; font-weight:900; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 1px 4px rgba(0,0,0,0.25); border:none; }
+  .cell-empty { border-radius:7px; padding:8px 4px; font-size:18px; font-weight:900; border:1.5px dashed var(--divider-color,#d1d5db); color:var(--divider-color,#d1d5db); transition:all 0.15s; }
+  .cell-empty.droptarget { border-color:var(--kid-color,#60a5fa); color:var(--kid-color,#60a5fa); background:color-mix(in srgb,var(--kid-color,#60a5fa) 8%,transparent); }
   .cell-dot { color:var(--disabled-color,#dde3ea); font-size:14px; }
 
   /* Palette */
-  .palette {
-    margin:12px 14px; background:var(--card-background-color,white);
-    border-radius:12px; padding:12px 14px;
-    box-shadow:0 1px 8px rgba(0,0,0,0.05);
-    border:1.5px solid color-mix(in srgb,var(--kid-color,#60a5fa) 44%,transparent);
-  }
+  .palette { margin:12px 14px; background:var(--card-background-color,white); border-radius:12px; padding:12px 14px; box-shadow:0 1px 8px rgba(0,0,0,0.05); border:1.5px solid color-mix(in srgb,var(--kid-color,#60a5fa) 44%,transparent); }
   .palette-hint { font-size:11px; font-weight:800; color:var(--secondary-text-color,#94a3b8); letter-spacing:0.5px; margin-bottom:9px; }
   .palette-chips { display:flex; flex-wrap:wrap; gap:6px; }
-
-  .p-chip {
-    border-radius:20px; padding:5px 12px;
-    font-size:12px; font-weight:800; border:1.5px solid transparent;
-    cursor:grab; user-select:none; transition:all 0.15s;
-  }
+  .p-chip { border-radius:20px; padding:5px 12px; font-size:12px; font-weight:800; border:1.5px solid transparent; cursor:grab; user-select:none; transition:all 0.15s; }
   .p-chip:active { cursor:grabbing; }
   .p-chip.selected { transform:scale(1.06); }
+  .clear-sel { margin-top:9px; padding:4px 12px; border-radius:20px; border:none; background:var(--secondary-background-color,#f1f5f9); color:var(--secondary-text-color,#64748b); font-size:12px; font-weight:800; cursor:pointer; font-family:inherit; }
 
-  .clear-sel {
-    margin-top:9px; padding:4px 12px; border-radius:20px; border:none;
-    background:var(--secondary-background-color,#f1f5f9);
-    color:var(--secondary-text-color,#64748b);
-    font-size:12px; font-weight:800; cursor:pointer; font-family:inherit;
-  }
-
-  /* Legend & summary */
-  .legend     { margin:10px 14px; display:flex; flex-wrap:wrap; gap:6px; }
-  .day-summary{ margin:8px 14px 14px; display:flex; gap:7px; flex-wrap:wrap; }
+  /* Legend */
+  .legend      { margin:10px 14px; display:flex; flex-wrap:wrap; gap:6px; }
+  .day-summary { margin:8px 14px 14px; display:flex; gap:7px; flex-wrap:wrap; }
   .legend-chip { border-radius:20px; padding:3px 10px; font-size:11px; font-weight:800; border:1.5px solid transparent; }
-
   .day-pill { border-radius:9px; padding:4px 10px; display:flex; align-items:center; gap:5px; border:1.5px solid var(--divider-color,#e2e8f0); background:var(--card-background-color,white); }
   .day-pill.today { border-color:var(--kid-color,#60a5fa); background:color-mix(in srgb,var(--kid-color,#60a5fa) 20%,transparent); }
   .day-pill-label { font-size:10.5px; font-weight:900; color:var(--secondary-text-color,#64748b); }
@@ -316,61 +183,197 @@ const STYLES = `
   .day-pill-count { border-radius:20px; padding:1px 6px; font-size:10.5px; font-weight:800; background:var(--divider-color,#e2e8f0); color:var(--secondary-text-color,#64748b); }
   .day-pill.today .day-pill-count { background:var(--kid-color,#60a5fa); color:white; }
 
-  /* Modal */
-  .modal-overlay {
-    position:fixed; inset:0; background:rgba(15,23,42,0.55); z-index:999;
-    display:flex; align-items:center; justify-content:center; padding:16px;
-  }
-  .modal {
-    background:var(--card-background-color,white); border-radius:20px; padding:22px;
-    width:100%; max-width:380px; max-height:90vh; overflow-y:auto;
-    box-shadow:0 20px 60px rgba(0,0,0,0.3);
-  }
+  /* Kid Modal */
+  .modal-overlay { position:fixed; inset:0; background:rgba(15,23,42,0.55); z-index:999; display:flex; align-items:center; justify-content:center; padding:16px; }
+  .modal { background:var(--card-background-color,white); border-radius:20px; padding:22px; width:100%; max-width:380px; max-height:90vh; overflow-y:auto; box-shadow:0 20px 60px rgba(0,0,0,0.3); }
   .modal-title { font-size:17px; font-weight:900; color:var(--primary-text-color); margin-bottom:18px; }
   .field-label { font-size:11px; font-weight:800; color:var(--secondary-text-color); letter-spacing:0.5px; }
-
-  .emoji-grid  { display:flex; flex-wrap:wrap; gap:6px; margin:8px 0 16px; }
-  .emoji-btn {
-    width:34px; height:34px; border-radius:8px; cursor:pointer; font-size:17px;
-    border:2px solid var(--divider-color,#e2e8f0); background:var(--card-background-color,white);
-  }
+  .emoji-grid { display:flex; flex-wrap:wrap; gap:6px; margin:8px 0 16px; }
+  .emoji-btn  { width:34px; height:34px; border-radius:8px; cursor:pointer; font-size:17px; border:2px solid var(--divider-color,#e2e8f0); background:var(--card-background-color,white); }
   .emoji-btn.selected { border-color:var(--kid-color,#60a5fa); }
-
-  .text-input {
-    display:block; width:100%; padding:9px 11px; border-radius:9px;
-    border:2px solid var(--divider-color,#e2e8f0);
-    background:var(--card-background-color,white); color:var(--primary-text-color);
-    font-size:14px; font-weight:700; font-family:inherit; outline:none;
-    margin-top:6px; margin-bottom:14px;
-  }
-
+  .text-input { display:block; width:100%; padding:9px 11px; border-radius:9px; border:2px solid var(--divider-color,#e2e8f0); background:var(--card-background-color,white); color:var(--primary-text-color); font-size:14px; font-weight:700; font-family:inherit; outline:none; margin-top:6px; margin-bottom:14px; }
   .color-grid { display:flex; gap:9px; flex-wrap:wrap; margin:8px 0 16px; }
   .color-dot  { width:28px; height:28px; border-radius:50%; cursor:pointer; border:3px solid transparent; transition:all 0.15s; }
-  .color-dot.selected { border-color:var(--primary-text-color,#0f172a); }
-
+  .color-dot.selected { border-color:var(--primary-text-color,#0f172a); outline:2px solid currentColor; outline-offset:2px; }
   .slots-list { margin:8px 0 18px; display:flex; flex-direction:column; gap:6px; }
   .slot-row   { display:flex; align-items:center; gap:6px; }
-  .slot-num-badge {
-    width:22px; height:22px; border-radius:50%;
-    background:var(--secondary-background-color,#f1f5f9); color:var(--secondary-text-color);
-    font-size:11px; font-weight:900; flex-shrink:0;
-    display:flex; align-items:center; justify-content:center;
-  }
-  .slot-input {
-    flex:1; padding:7px 8px; border-radius:8px;
-    border:2px solid var(--divider-color,#e2e8f0);
-    background:var(--card-background-color,white); color:var(--primary-text-color);
-    font-size:13px; font-weight:700; font-family:inherit; outline:none;
-  }
+  .slot-num-badge { width:22px; height:22px; border-radius:50%; background:var(--secondary-background-color,#f1f5f9); color:var(--secondary-text-color); font-size:11px; font-weight:900; flex-shrink:0; display:flex; align-items:center; justify-content:center; }
+  .slot-input { flex:1; padding:7px 8px; border-radius:8px; border:2px solid var(--divider-color,#e2e8f0); background:var(--card-background-color,white); color:var(--primary-text-color); font-size:13px; font-weight:700; font-family:inherit; outline:none; }
   .slot-sep    { color:var(--secondary-text-color); font-weight:800; }
   .slot-remove { width:24px; height:24px; border-radius:50%; border:none; background:#fee2e2; color:#ef4444; font-size:14px; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
   .slot-add    { padding:7px; border-radius:8px; border:2px dashed var(--divider-color,#e2e8f0); background:transparent; color:var(--secondary-text-color); font-size:12px; font-weight:800; cursor:pointer; font-family:inherit; width:100%; }
-
   .modal-actions { display:flex; gap:8px; margin-top:4px; }
   .btn-delete { padding:10px 14px; border-radius:10px; border:none; background:#fee2e2; color:#b91c1c; font-size:13px; font-weight:800; cursor:pointer; font-family:inherit; }
   .btn-cancel { flex:1; padding:10px; border-radius:10px; border:2px solid var(--divider-color,#e2e8f0); background:var(--card-background-color,white); color:var(--secondary-text-color); font-size:13px; font-weight:800; cursor:pointer; font-family:inherit; }
   .btn-save   { flex:2; padding:10px; border-radius:10px; border:none; background:var(--kid-color,#60a5fa); color:white; font-size:14px; font-weight:900; cursor:pointer; font-family:inherit; }
 `;
+
+/* ═══════════════════════════════════════════════════
+   VISUAL EDITOR STYLES
+═══════════════════════════════════════════════════ */
+const EDITOR_STYLES = `
+  @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
+  :host { display:block; font-family:'Nunito',sans-serif; padding:16px; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+
+  h3 { font-size:14px; font-weight:900; color:var(--primary-text-color); margin-bottom:12px; letter-spacing:-0.2px; }
+
+  .section { margin-bottom:24px; }
+
+  .info-box {
+    background:color-mix(in srgb,var(--info-color,#60a5fa) 12%,transparent);
+    border:1.5px solid color-mix(in srgb,var(--info-color,#60a5fa) 40%,transparent);
+    border-radius:10px; padding:10px 14px;
+    font-size:12px; font-weight:700; color:var(--primary-text-color);
+    margin-bottom:20px; line-height:1.5;
+  }
+
+  /* Subject list */
+  .subject-list { display:flex; flex-direction:column; gap:8px; margin-bottom:12px; }
+  .subject-row  { display:flex; align-items:center; gap:10px; background:var(--secondary-background-color,#f8fafc); border-radius:10px; padding:8px 12px; }
+  .subject-swatch { width:28px; height:28px; border-radius:8px; border:2px solid rgba(0,0,0,0.1); flex-shrink:0; cursor:pointer; position:relative; overflow:hidden; }
+  .subject-swatch input[type=color] { position:absolute; inset:-4px; width:calc(100%+8px); height:calc(100%+8px); opacity:0; cursor:pointer; border:none; padding:0; }
+  .subject-name-input { flex:1; padding:7px 10px; border-radius:8px; border:2px solid var(--divider-color,#e2e8f0); background:var(--card-background-color,white); color:var(--primary-text-color); font-size:13px; font-weight:700; font-family:inherit; outline:none; }
+  .subject-name-input:focus { border-color:#60a5fa; }
+  .subject-remove { width:28px; height:28px; border-radius:50%; border:none; background:#fee2e2; color:#ef4444; font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+
+  .btn-add-subject {
+    width:100%; padding:9px; border-radius:10px;
+    border:2px dashed var(--divider-color,#e2e8f0);
+    background:transparent; color:var(--secondary-text-color,#64748b);
+    font-size:13px; font-weight:800; cursor:pointer; font-family:inherit;
+    transition: all 0.15s;
+  }
+  .btn-add-subject:hover { border-color:#60a5fa; color:#60a5fa; }
+
+  .preview-chips { display:flex; flex-wrap:wrap; gap:6px; margin-top:12px; }
+  .preview-chip  { border-radius:20px; padding:4px 12px; font-size:12px; font-weight:800; border:1.5px solid transparent; }
+`;
+
+/* ═══════════════════════════════════════════════════
+   VISUAL EDITOR
+═══════════════════════════════════════════════════ */
+class TimetableCardEditor extends HTMLElement {
+  constructor() {
+    super();
+    this.attachShadow({ mode: "open" });
+    this._config   = {};
+    this._subjects = [];
+    this._debounce = null;
+  }
+
+  setConfig(config) {
+    this._config   = config;
+    this._subjects = JSON.parse(JSON.stringify(config.subjects || DEFAULT_SUBJECTS));
+    this._render();
+  }
+
+  set hass(hass) { this._hass = hass; }
+
+  _fireChanged() {
+    clearTimeout(this._debounce);
+    this._debounce = setTimeout(() => {
+      this.dispatchEvent(new CustomEvent("config-changed", {
+        detail: { config: { ...this._config, subjects: this._subjects } },
+        bubbles: true, composed: true,
+      }));
+    }, 300);
+  }
+
+  _render() {
+    this.shadowRoot.innerHTML = "";
+    const style = document.createElement("style");
+    style.textContent = EDITOR_STYLES;
+    this.shadowRoot.appendChild(style);
+
+    const root = document.createElement("div");
+    root.innerHTML = this._buildEditorHTML();
+    this.shadowRoot.appendChild(root);
+    this._attachEditorEvents(root);
+  }
+
+  _buildEditorHTML() {
+    return `
+      <div class="info-box">
+        ℹ️ <strong>Kinder & Stundenpläne</strong> werden direkt in der Card über den ✏️ Bearbeitungsmodus verwaltet.<br>
+        Hier werden nur die <strong>Fächer und ihre Farben</strong> konfiguriert.
+      </div>
+
+      <div class="section">
+        <h3>Fächer</h3>
+        <div class="subject-list">
+          ${this._subjects.map((s, i) => {
+            const style = buildSubjectStyle(s.color || "#64748b");
+            return `
+              <div class="subject-row" data-idx="${i}">
+                <div class="subject-swatch" style="background:${style.bg};border-color:${style.border}" title="Farbe wählen">
+                  <input type="color" value="${s.color || "#64748b"}" data-action="color-change" data-idx="${i}">
+                </div>
+                <input class="subject-name-input" type="text"
+                  value="${s.name || ""}" placeholder="Fachname"
+                  data-action="name-change" data-idx="${i}">
+                <button class="subject-remove" data-action="subject-remove" data-idx="${i}">×</button>
+              </div>
+            `;
+          }).join("")}
+        </div>
+        <button class="btn-add-subject" data-action="subject-add">+ Fach hinzufügen</button>
+
+        <!-- Live-Vorschau der Fach-Chips -->
+        <div class="preview-chips">
+          ${this._subjects.map(s => {
+            const sc = buildSubjectStyle(s.color || "#64748b");
+            return `<div class="preview-chip" style="background:${sc.bg};color:${sc.text};border-color:${sc.border}">${s.name || "?"}</div>`;
+          }).join("")}
+        </div>
+      </div>
+    `;
+  }
+
+  _attachEditorEvents(root) {
+    root.addEventListener("click", e => {
+      const el = e.target.closest("[data-action]");
+      if (!el) return;
+      const action = el.dataset.action;
+      const idx    = parseInt(el.dataset.idx);
+
+      if (action === "subject-remove") {
+        this._subjects.splice(idx, 1);
+        this._render(); this._fireChanged();
+      } else if (action === "subject-add") {
+        this._subjects.push({ name: "", color: "#64748b" });
+        this._render(); this._fireChanged();
+      }
+    });
+
+    root.addEventListener("input", e => {
+      const el = e.target.closest("[data-action]");
+      if (!el) return;
+      const action = el.dataset.action;
+      const idx    = parseInt(el.dataset.idx);
+
+      if (action === "name-change") {
+        this._subjects[idx].name = el.value;
+        // Update preview chip only – no full re-render while typing
+        const chips = this.shadowRoot.querySelectorAll(".preview-chip");
+        if (chips[idx]) chips[idx].textContent = el.value || "?";
+        this._fireChanged();
+      } else if (action === "color-change") {
+        this._subjects[idx].color = el.value;
+        // Update swatch + chip live
+        const sc   = buildSubjectStyle(el.value);
+        const row  = this.shadowRoot.querySelector(`.subject-row[data-idx="${idx}"]`);
+        const sw   = row?.querySelector(".subject-swatch");
+        const chip = this.shadowRoot.querySelectorAll(".preview-chip")[idx];
+        if (sw)   { sw.style.background = sc.bg; sw.style.borderColor = sc.border; }
+        if (chip) { chip.style.background = sc.bg; chip.style.color = sc.text; chip.style.borderColor = sc.border; }
+        this._fireChanged();
+      }
+    });
+  }
+}
+
+customElements.define("timetable-card-editor", TimetableCardEditor);
 
 /* ═══════════════════════════════════════════════════
    TIMETABLE CARD  –  Web Component
@@ -379,26 +382,27 @@ class TimetableCard extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
-    this._config      = {};
-    this._kids        = [];
-    this._subjects    = {};   // computed from config.subjects
-    this._activeKid   = 0;
-    this._editMode    = false;
-    this._selected    = null;
-    this._drag        = null;
-    this._showSaved   = false;
-    this._savedTimer  = null;
-    this._modal       = null;
-    this._modalState  = null;
+    this._config     = {};
+    this._kids       = [];
+    this._subjects   = {};
+    this._activeKid  = 0;
+    this._editMode   = false;
+    this._selected   = null;
+    this._drag       = null;
+    this._showSaved  = false;
+    this._savedTimer = null;
+    this._modal      = null;
+    this._modalState = null;
   }
 
   /* ── HA Card API ──────────────────────────────── */
 
+  static getConfigElement() {
+    return document.createElement("timetable-card-editor");
+  }
+
   static getStubConfig() {
-    return {
-      subjects: DEFAULT_SUBJECTS,
-      kids:     DEFAULT_KIDS,
-    };
+    return { subjects: DEFAULT_SUBJECTS, kids: DEFAULT_KIDS };
   }
 
   static getLayoutOptions() {
@@ -421,20 +425,18 @@ class TimetableCard extends HTMLElement {
     return Math.max(4, Math.ceil(max * 0.8) + 3);
   }
 
-  /* ── Save back to HA config ───────────────────── */
+  /* ── Save ─────────────────────────────────────── */
 
   _saveConfig() {
-    const newConfig = { ...this._config, kids: this._kids };
     this.dispatchEvent(new CustomEvent("config-changed", {
-      detail: { config: newConfig }, bubbles: true, composed: true,
+      detail: { config: { ...this._config, kids: this._kids } },
+      bubbles: true, composed: true,
     }));
     this._showSaved = true;
     clearTimeout(this._savedTimer);
     this._savedTimer = setTimeout(() => { this._showSaved = false; this._render(); }, 1800);
     this._render();
   }
-
-  /* ── Schedule mutations ───────────────────────── */
 
   _setSubject(kidIdx, day, slot, subject) {
     const kid  = this._kids[kidIdx];
@@ -455,9 +457,8 @@ class TimetableCard extends HTMLElement {
   _render() {
     this.shadowRoot.innerHTML = "";
     const style = document.createElement("style");
-    style.textContent = STYLES;
+    style.textContent = CARD_STYLES;
     this.shadowRoot.appendChild(style);
-
     const wrapper = document.createElement("div");
     wrapper.className = "card";
     wrapper.innerHTML = this._buildHTML();
@@ -465,9 +466,7 @@ class TimetableCard extends HTMLElement {
     this._attachEvents(wrapper);
   }
 
-  _sc(subject) {
-    return this._subjects[subject] || FALLBACK_STYLE;
-  }
+  _sc(subject) { return this._subjects[subject] || FALLBACK_STYLE; }
 
   _buildHTML() {
     const kid = this._kids[this._activeKid] || this._kids[0];
@@ -501,7 +500,6 @@ class TimetableCard extends HTMLElement {
             </button>
           </div>
         </div>
-
         ${(this._editMode || this._showSaved) ? `
           <div class="status-bar" style="${css(kid)}">
             <span class="status-text ${this._showSaved ? "saved" : ""}">
@@ -523,9 +521,9 @@ class TimetableCard extends HTMLElement {
           <thead>
             <tr>
               <th class="th-corner"></th>
-              ${DAYS.map((day, i) => `
+              ${DAYS.map((d, i) => `
                 <th class="th-day ${i === todayColIdx ? "today" : ""}" style="${css(kid)}">
-                  <div class="day-label">${DAY_LABELS[i].slice(0, 2)}<span style="font-weight:700">${DAY_LABELS[i].slice(2)}</span></div>
+                  <div class="day-label">${DAY_LABELS[i].slice(0,2)}<span style="font-weight:700">${DAY_LABELS[i].slice(2)}</span></div>
                   ${i === todayColIdx ? `<div class="today-dot"></div>` : ""}
                 </th>
               `).join("")}
@@ -535,9 +533,9 @@ class TimetableCard extends HTMLElement {
             ${visSlots.map((s, rowIdx) => {
               const isLast   = rowIdx === visSlots.length - 1;
               const bigBreak = s.slot === 2 || s.slot === 4;
-              const rowClass = isLast ? "row-last" : bigBreak ? "row-break" : "row-normal";
+              const rowCls   = isLast ? "row-last" : bigBreak ? "row-break" : "row-normal";
               return `
-                <tr class="${rowClass} ${rowIdx % 2 === 0 ? "row-even" : "row-odd"}">
+                <tr class="${rowCls} ${rowIdx % 2 === 0 ? "row-even" : "row-odd"}">
                   <td class="td-time">
                     <div class="slot-num">${s.slot}</div>
                     <div class="slot-time">${s.time}</div>
@@ -548,7 +546,7 @@ class TimetableCard extends HTMLElement {
                     const lesson  = (kid.schedule[day] || []).find(l => l.slot === s.slot);
                     const sc      = lesson ? this._sc(lesson.subject) : null;
                     return `
-                      <td class="td-subject ${isToday ? (rowIdx % 2 === 0 ? "today-col" : "today-col alt") : ""}"
+                      <td class="td-subject ${isToday ? (rowIdx%2===0 ? "today-col" : "today-col alt") : ""}"
                         data-action="slot-click" data-day="${day}" data-slot="${s.slot}"
                         data-current="${lesson ? lesson.subject : ""}"
                         style="${css(kid)}"
@@ -591,7 +589,7 @@ class TimetableCard extends HTMLElement {
             ${Object.entries(this._subjects).map(([name, sc]) => {
               const sel = this._selected === name;
               return `<div class="p-chip ${sel ? "selected" : ""}"
-                style="background:${sel ? sc.text : sc.bg};color:${sel ? "white" : sc.text};border-color:${sel ? sc.text : sc.border};box-shadow:${sel ? `0 2px 10px ${sc.text}44` : "none"}"
+                style="background:${sel?sc.text:sc.bg};color:${sel?"white":sc.text};border-color:${sel?sc.text:sc.border};box-shadow:${sel?`0 2px 10px ${sc.text}44`:"none"}"
                 draggable="true" data-action="palette-drag" data-subject="${name}">${name}</div>`;
             }).join("")}
           </div>
@@ -609,7 +607,7 @@ class TimetableCard extends HTMLElement {
             const count   = (kid.schedule[day] || []).length;
             const isToday = i === todayColIdx;
             return `<div class="day-pill ${isToday ? "today" : ""}" style="${css(kid)}">
-              <span class="day-pill-label">${DAY_LABELS[i].slice(0, 2)}</span>
+              <span class="day-pill-label">${DAY_LABELS[i].slice(0,2)}</span>
               <span class="day-pill-count">${count} Std.</span>
             </div>`;
           }).join("")}
@@ -621,20 +619,15 @@ class TimetableCard extends HTMLElement {
   }
 
   _buildModal() {
-    const isNew  = this._modal.idx === "new";
-    const s      = this._modalState;
-    const preset = s.preset;
+    const isNew = this._modal.idx === "new";
+    const s     = this._modalState;
     return `
       <div class="modal-overlay" data-action="modal-overlay">
-        <div class="modal" style="--kid-color:${preset.color}">
+        <div class="modal" style="--kid-color:${s.preset.color}">
           <div class="modal-title">${isNew ? "Kind hinzufügen" : "Kind bearbeiten"}</div>
           <div class="field-label">EMOJI</div>
           <div class="emoji-grid">
-            ${EMOJIS.map(e => `
-              <button class="emoji-btn ${s.emoji === e ? "selected" : ""}"
-                style="${s.emoji === e ? `border-color:${preset.color}` : ""}"
-                data-action="modal-emoji" data-emoji="${e}">${e}</button>
-            `).join("")}
+            ${EMOJIS.map(e => `<button class="emoji-btn ${s.emoji===e?"selected":""}" style="${s.emoji===e?`border-color:${s.preset.color}`:""}" data-action="modal-emoji" data-emoji="${e}">${e}</button>`).join("")}
           </div>
           <div class="field-label">NAME</div>
           <input class="text-input" data-action="modal-name" placeholder="z.B. Lena" value="${s.name}">
@@ -642,11 +635,7 @@ class TimetableCard extends HTMLElement {
           <input class="text-input" data-action="modal-age" placeholder="z.B. 3. Klasse" value="${s.age}">
           <div class="field-label">FARBE</div>
           <div class="color-grid">
-            ${COLOR_PRESETS.map((c, i) => `
-              <div class="color-dot ${c.color === preset.color ? "selected" : ""}"
-                style="background:${c.color};${c.color === preset.color ? `outline:2px solid ${c.color};outline-offset:2px` : ""}"
-                data-action="modal-color" data-colidx="${i}"></div>
-            `).join("")}
+            ${COLOR_PRESETS.map((c, i) => `<div class="color-dot ${c.color===s.preset.color?"selected":""}" style="background:${c.color};${c.color===s.preset.color?`outline:2px solid ${c.color};outline-offset:2px`:""}" data-action="modal-color" data-colidx="${i}"></div>`).join("")}
           </div>
           <div class="field-label">STUNDEN & ZEITEN</div>
           <div class="slots-list">
@@ -664,7 +653,7 @@ class TimetableCard extends HTMLElement {
           <div class="modal-actions">
             ${!isNew ? `<button class="btn-delete" data-action="modal-delete">Löschen</button>` : ""}
             <button class="btn-cancel" data-action="modal-cancel">Abbrechen</button>
-            <button class="btn-save" style="background:${preset.color}" data-action="modal-save">Speichern</button>
+            <button class="btn-save" style="background:${s.preset.color}" data-action="modal-save">Speichern</button>
           </div>
         </div>
       </div>
@@ -683,53 +672,33 @@ class TimetableCard extends HTMLElement {
   }
 
   _onClick(e) {
-    const el     = e.target.closest("[data-action]");
+    const el = e.target.closest("[data-action]");
     if (!el) return;
-    const action = el.dataset.action;
+    const a = el.dataset.action;
 
-    if (action === "tab") {
-      this._activeKid = parseInt(el.dataset.idx); this._selected = null; this._render();
-    } else if (action === "toggle-edit") {
-      this._editMode = !this._editMode; this._selected = null; this._render();
-    } else if (action === "edit-kid") {
-      e.stopPropagation(); this._openModal(parseInt(el.dataset.idx));
-    } else if (action === "add-kid") {
-      this._openModal("new");
-    } else if (action === "slot-click") {
+    if      (a === "tab")           { this._activeKid = parseInt(el.dataset.idx); this._selected = null; this._render(); }
+    else if (a === "toggle-edit")   { this._editMode = !this._editMode; this._selected = null; this._render(); }
+    else if (a === "edit-kid")      { e.stopPropagation(); this._openModal(parseInt(el.dataset.idx)); }
+    else if (a === "add-kid")       { this._openModal("new"); }
+    else if (a === "slot-click") {
       if (!this._editMode) return;
-      const day  = el.dataset.day;
-      const slot = parseInt(el.dataset.slot);
-      const cur  = el.dataset.current || null;
-      if (this._selected)    { this._setSubject(this._activeKid, day, slot, this._selected); }
-      else if (cur)          { this._selected = cur; this._setSubject(this._activeKid, day, slot, null); }
-    } else if (action === "remove-subject") {
-      e.stopPropagation(); this._setSubject(this._activeKid, el.dataset.day, parseInt(el.dataset.slot), null);
-    } else if (action === "palette-drag") {
-      const subj = el.dataset.subject; this._selected = this._selected === subj ? null : subj; this._render();
-    } else if (action === "clear-sel") {
-      this._selected = null; this._render();
-    } else if (action === "export") {
-      this._export();
-    } else if (action === "import") {
-      this.shadowRoot.querySelector("[data-action='import-file']")?.click();
-    } else if (action === "modal-overlay") {
-      if (e.target === el) this._closeModal();
-    } else if (action === "modal-cancel") { this._closeModal();
-    } else if (action === "modal-save")   { this._saveModal();
-    } else if (action === "modal-delete") { this._deleteKid();
-    } else if (action === "modal-emoji") {
-      this._modalState.emoji = el.dataset.emoji; this._render();
-    } else if (action === "modal-color") {
-      const ci = parseInt(el.dataset.colidx);
-      this._modalState.colorIdx = ci; this._modalState.preset = COLOR_PRESETS[ci]; this._render();
-    } else if (action === "modal-slot-remove") {
-      const i = parseInt(el.dataset.idx);
-      this._modalState.slots = this._modalState.slots.filter((_, j) => j !== i).map((s, j) => ({ ...s, slot: j + 1 }));
-      this._render();
-    } else if (action === "modal-slot-add") {
-      const n = this._modalState.slots.length ? this._modalState.slots[this._modalState.slots.length - 1].slot + 1 : 1;
-      this._modalState.slots.push({ slot: n, time: "", end: "" }); this._render();
+      const day = el.dataset.day, slot = parseInt(el.dataset.slot), cur = el.dataset.current || null;
+      if (this._selected)   { this._setSubject(this._activeKid, day, slot, this._selected); }
+      else if (cur)         { this._selected = cur; this._setSubject(this._activeKid, day, slot, null); }
     }
+    else if (a === "remove-subject") { e.stopPropagation(); this._setSubject(this._activeKid, el.dataset.day, parseInt(el.dataset.slot), null); }
+    else if (a === "palette-drag")   { const s = el.dataset.subject; this._selected = this._selected === s ? null : s; this._render(); }
+    else if (a === "clear-sel")      { this._selected = null; this._render(); }
+    else if (a === "export")         { this._export(); }
+    else if (a === "import")         { this.shadowRoot.querySelector("[data-action='import-file']")?.click(); }
+    else if (a === "modal-overlay")  { if (e.target === el) this._closeModal(); }
+    else if (a === "modal-cancel")   { this._closeModal(); }
+    else if (a === "modal-save")     { this._saveModal(); }
+    else if (a === "modal-delete")   { this._deleteKid(); }
+    else if (a === "modal-emoji")    { this._modalState.emoji = el.dataset.emoji; this._render(); }
+    else if (a === "modal-color")    { const ci = parseInt(el.dataset.colidx); this._modalState.colorIdx = ci; this._modalState.preset = COLOR_PRESETS[ci]; this._render(); }
+    else if (a === "modal-slot-remove") { const i = parseInt(el.dataset.idx); this._modalState.slots = this._modalState.slots.filter((_, j) => j !== i).map((s, j) => ({ ...s, slot: j+1 })); this._render(); }
+    else if (a === "modal-slot-add")    { const n = this._modalState.slots.length ? this._modalState.slots[this._modalState.slots.length-1].slot+1 : 1; this._modalState.slots.push({ slot:n, time:"", end:"" }); this._render(); }
   }
 
   _onInput(e) {
@@ -769,19 +738,17 @@ class TimetableCard extends HTMLElement {
     this._drag = null;
   }
 
-  /* ── Modal ────────────────────────────────────── */
-
   _openModal(idx) {
     const isNew = idx === "new";
     const kid   = isNew ? null : this._kids[idx];
     const ci    = kid ? Math.max(0, COLOR_PRESETS.findIndex(c => c.color === kid.color)) : 0;
     this._modal = { idx };
     this._modalState = {
-      name: kid?.name || "", age: kid?.age || "", emoji: kid?.emoji || "⭐",
+      name: kid?.name||"", age: kid?.age||"", emoji: kid?.emoji||"⭐",
       colorIdx: ci, preset: COLOR_PRESETS[ci],
       slots: kid?.slots ? [...kid.slots] : [
-        { slot:1, time:"08:00", end:"08:45" }, { slot:2, time:"08:45", end:"09:30" },
-        { slot:3, time:"09:50", end:"10:35" }, { slot:4, time:"10:35", end:"11:20" },
+        {slot:1,time:"08:00",end:"08:45"},{slot:2,time:"08:45",end:"09:30"},
+        {slot:3,time:"09:50",end:"10:35"},{slot:4,time:"10:35",end:"11:20"},
       ],
     };
     this._render();
@@ -792,12 +759,12 @@ class TimetableCard extends HTMLElement {
   _saveModal() {
     const s = this._modalState;
     if (!s.name.trim()) return;
-    const data = { name: s.name.trim(), age: s.age.trim(), emoji: s.emoji, color: s.preset.color, accent: s.preset.accent, light: s.preset.light, slots: s.slots };
+    const data = { name:s.name.trim(), age:s.age.trim(), emoji:s.emoji, color:s.preset.color, accent:s.preset.accent, light:s.preset.light, slots:s.slots };
     if (this._modal.idx === "new") {
-      this._kids.push({ ...data, schedule: { Mo:[], Di:[], Mi:[], Do:[], Fr:[] } });
+      this._kids.push({ ...data, schedule:{Mo:[],Di:[],Mi:[],Do:[],Fr:[]} });
       this._activeKid = this._kids.length - 1;
     } else {
-      this._kids[this._modal.idx] = { ...data, schedule: this._kids[this._modal.idx].schedule };
+      this._kids[this._modal.idx] = { ...data, schedule:this._kids[this._modal.idx].schedule };
     }
     this._closeModal(); this._saveConfig();
   }
@@ -809,10 +776,8 @@ class TimetableCard extends HTMLElement {
     this._closeModal(); this._saveConfig();
   }
 
-  /* ── Export ───────────────────────────────────── */
-
   _export() {
-    const blob = new Blob([JSON.stringify({ subjects: this._config.subjects, kids: this._kids }, null, 2)], { type: "application/json" });
+    const blob = new Blob([JSON.stringify({ subjects: this._config.subjects, kids: this._kids }, null, 2)], { type:"application/json" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob); a.download = "timetable_backup.json"; a.click();
   }
