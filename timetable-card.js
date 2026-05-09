@@ -11,6 +11,9 @@
    lighter bg and border tones are computed automatically.
 ═══════════════════════════════════════════════════ */
 
+const CARD_VERSION = "1.0.0";
+console.info(`%c TIMETABLE-CARD %c v${CARD_VERSION} `, "background:#60a5fa;color:white;font-weight:900", "background:#1d4ed8;color:white;font-weight:700");
+
 /** Parse a hex color string to RGB components */
 function hexToRgb(hex) {
   const h = hex.replace("#", "");
