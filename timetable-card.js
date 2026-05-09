@@ -2,10 +2,10 @@
  * Timetable Card for Home Assistant
  * https://github.com/ay-kay/lovelace-timetable-card
  * @license MIT
- * @version 1.1.0
+ * @version 1.1.1
  */
 
-const CARD_VERSION = "1.1.0";
+const CARD_VERSION = "1.1.1";
 console.info(
   `%c TIMETABLE-CARD %c v${CARD_VERSION} `,
   "background:#60a5fa;color:white;font-weight:900;padding:2px 4px;border-radius:4px 0 0 4px",
@@ -117,7 +117,8 @@ const CARD_STYLES = `
   .tab-name { font-size:13px; font-weight:900; color:var(--secondary-text-color,#94a3b8); text-align:left; }
   .tab-age  { font-size:10px; font-weight:700; color:var(--disabled-color,#b0bec5); }
   .tab.active .tab-name { color:var(--kid-accent,#1d4ed8); }
-  .tab-edit-btn { position:absolute; top:6px; right:5px; width:18px; height:18px; border-radius:50%; border:none; background:var(--kid-color,#60a5fa); color:white; font-size:9px; cursor:pointer; font-weight:900; display:flex; align-items:center; justify-content:center; }
+  .tab-edit-btn { width:30px; height:30px; border-radius:50%; border:none; background:var(--kid-color,#60a5fa); color:white; font-size:14px; cursor:pointer; font-weight:900; display:flex; align-items:center; justify-content:center; flex-shrink:0; box-shadow:0 2px 8px color-mix(in srgb,var(--kid-color,#60a5fa) 55%,transparent); transition:all 0.2s; }
+  .tab-edit-btn:hover { filter:brightness(0.9); transform:scale(1.08); }
   .tab-add { padding:11px 16px 13px; border:none; border-left:1px solid var(--divider-color,#f1f5f9); border-bottom:3px solid transparent; background:var(--secondary-background-color,#f8fafc); color:var(--secondary-text-color,#94a3b8); font-size:22px; font-weight:900; cursor:pointer; font-family:inherit; }
   .pencil-wrap { display:flex; align-items:center; padding:0 12px; border-left:1px solid var(--divider-color,#f1f5f9); background:var(--secondary-background-color,#f8fafc); flex-shrink:0; }
   .pencil-btn { width:36px; height:36px; border-radius:10px; border:none; background:var(--disabled-color,#e2e8f0); color:var(--secondary-text-color,#64748b); font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.2s; }
@@ -185,7 +186,7 @@ const CARD_STYLES = `
 
   /* Kid Modal */
   .modal-overlay { position:fixed; inset:0; background:rgba(15,23,42,0.55); z-index:999; display:flex; align-items:center; justify-content:center; padding:16px; }
-  .modal { background:var(--card-background-color,white); border-radius:20px; padding:22px; width:100%; max-width:380px; max-height:90vh; overflow-y:auto; box-shadow:0 20px 60px rgba(0,0,0,0.3); }
+  .modal { background:var(--card-background-color,white); border-radius:20px; padding:22px; width:100%; max-width:380px; max-height:90vh; overflow-y:auto; overflow-x:hidden; box-shadow:0 20px 60px rgba(0,0,0,0.3); }
   .modal-title { font-size:17px; font-weight:900; color:var(--primary-text-color); margin-bottom:18px; }
   .field-label { font-size:11px; font-weight:800; color:var(--secondary-text-color); letter-spacing:0.5px; }
   .emoji-grid { display:flex; flex-wrap:wrap; gap:6px; margin:8px 0 16px; }
@@ -198,7 +199,7 @@ const CARD_STYLES = `
   .slots-list { margin:8px 0 18px; display:flex; flex-direction:column; gap:6px; }
   .slot-row   { display:flex; align-items:center; gap:6px; }
   .slot-num-badge { width:22px; height:22px; border-radius:50%; background:var(--secondary-background-color,#f1f5f9); color:var(--secondary-text-color); font-size:11px; font-weight:900; flex-shrink:0; display:flex; align-items:center; justify-content:center; }
-  .slot-input { flex:1; padding:7px 8px; border-radius:8px; border:2px solid var(--divider-color,#e2e8f0); background:var(--card-background-color,white); color:var(--primary-text-color); font-size:13px; font-weight:700; font-family:inherit; outline:none; }
+  .slot-input { width:80px; min-width:0; flex-shrink:1; padding:7px 8px; border-radius:8px; border:2px solid var(--divider-color,#e2e8f0); background:var(--card-background-color,white); color:var(--primary-text-color); font-size:13px; font-weight:700; font-family:inherit; outline:none; }
   .slot-sep    { color:var(--secondary-text-color); font-weight:800; }
   .slot-remove { width:24px; height:24px; border-radius:50%; border:none; background:#fee2e2; color:#ef4444; font-size:14px; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
   .slot-add    { padding:7px; border-radius:8px; border:2px dashed var(--divider-color,#e2e8f0); background:transparent; color:var(--secondary-text-color); font-size:12px; font-weight:800; cursor:pointer; font-family:inherit; width:100%; }
@@ -485,11 +486,11 @@ class TimetableCard extends HTMLElement {
           ${this._kids.map((k, i) => `
             <div class="tab ${this._activeKid === i ? "active" : ""}" style="${css(k)}" data-action="tab" data-idx="${i}">
               <div class="tab-avatar">${k.emoji}</div>
-              <div>
+              <div style="flex:1;text-align:left;">
                 <div class="tab-name">${k.name}</div>
                 <div class="tab-age">${k.age}</div>
               </div>
-              ${this._editMode ? `<button class="tab-edit-btn" style="background:${k.color}" data-action="edit-kid" data-idx="${i}">✏</button>` : ""}
+              ${this._editMode ? `<button class="tab-edit-btn" style="background:${k.color};box-shadow:0 2px 8px ${k.color}55" data-action="edit-kid" data-idx="${i}">✏️</button>` : ""}
             </div>
           `).join("")}
           ${this._editMode ? `<button class="tab-add" data-action="add-kid">+</button>` : ""}
