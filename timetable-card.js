@@ -2,10 +2,10 @@
  * Timetable Card for Home Assistant
  * https://github.com/ay-kay/lovelace-timetable-card
  * @license MIT
- * @version 2.0.2
+ * @version 2.0.3
  */
 
-const CARD_VERSION = "2.0.2";
+const CARD_VERSION = "2.0.3";
 console.info(
   `%c TIMETABLE-CARD %c v${CARD_VERSION} `,
   "background:#60a5fa;color:white;font-weight:900;padding:2px 4px;border-radius:4px 0 0 4px",
@@ -400,8 +400,8 @@ class TimetableCardEditor extends HTMLElement {
       <!-- Kid info bar -->
       <div class="kid-bar" style="${css}">
         <div class="kid-bar-emoji" data-action="toggle-emoji" title="Emoji ändern">${kid.emoji}</div>
-        <input class="kid-bar-name" data-action="kid-name" value="${kid.name}" placeholder="Name" style="color:${kid.accent}">
-        <input class="kid-bar-age"  data-action="kid-age"  value="${kid.age}"  placeholder="Klasse">
+        <input class="kid-bar-name" data-action="kid-name" value="${kid.name}" placeholder="Name" style="color:${kid.accent}" tabindex="1">
+        <input class="kid-bar-age"  data-action="kid-age"  value="${kid.age}"  placeholder="Klasse" tabindex="2">
         <div class="color-dots">
           ${COLOR_PRESETS.map((c,i)=>`
             <div class="color-dot ${c.color===kid.color?"sel":""}"
@@ -426,9 +426,9 @@ class TimetableCardEditor extends HTMLElement {
             ${kid.slots.map((s,i)=>`
               <div class="slot-row">
                 <div class="slot-badge">${s.slot}</div>
-                <input class="slot-inp" data-action="slot-time" data-idx="${i}" value="${s.time}" placeholder="08:00">
+                <input class="slot-inp" data-action="slot-time" data-idx="${i}" value="${s.time}" placeholder="08:00" tabindex="${10 + i*2}">
                 <span class="slot-sep">–</span>
-                <input class="slot-inp" data-action="slot-end"  data-idx="${i}" value="${s.end}"  placeholder="08:45">
+                <input class="slot-inp" data-action="slot-end"  data-idx="${i}" value="${s.end}"  placeholder="08:45" tabindex="${11 + i*2}">
                 <button class="slot-del" data-action="slot-del" data-idx="${i}">×</button>
               </div>`).join("")}
           </div>
@@ -478,7 +478,7 @@ class TimetableCardEditor extends HTMLElement {
                 <div class="subj-swatch" style="background:${sc.bg};border-color:${sc.border}" title="Farbe">
                   <input type="color" value="${s.color||"#64748b"}" data-action="subj-color" data-idx="${i}">
                 </div>
-                <input class="subj-name" value="${s.name||""}" placeholder="Fachname" data-action="subj-name" data-idx="${i}">
+                <input class="subj-name" value="${s.name||""}" placeholder="Fachname" data-action="subj-name" data-idx="${i}" tabindex="${10 + i}">
                 <button class="subj-del" data-action="subj-del" data-idx="${i}">×</button>
               </div>`;
           }).join("")}
