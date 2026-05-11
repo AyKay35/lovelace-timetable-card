@@ -2,10 +2,10 @@
  * Timetable Card for Home Assistant
  * https://github.com/ay-kay/lovelace-timetable-card
  * @license MIT
- * @version 2.0.1
+ * @version 2.0.2
  */
 
-const CARD_VERSION = "2.0.1";
+const CARD_VERSION = "2.0.2";
 console.info(
   `%c TIMETABLE-CARD %c v${CARD_VERSION} `,
   "background:#60a5fa;color:white;font-weight:900;padding:2px 4px;border-radius:4px 0 0 4px",
@@ -320,15 +320,9 @@ class TimetableCardEditor extends HTMLElement {
     this._showEmoji  = false;
     this._showSlots  = false;
     this._debounce   = null;
-    this._isFiring   = false;
   }
 
   setConfig(config) {
-    // If we fired the change ourselves, skip re-render to preserve input focus
-    if (this._isFiring) {
-      this._config = config;
-      return;
-    }
     this._config     = config;
     this._kids       = JSON.parse(JSON.stringify(config.kids     || DEFAULT_KIDS));
     this._subjects   = JSON.parse(JSON.stringify(config.subjects || DEFAULT_SUBJECTS));
@@ -340,16 +334,10 @@ class TimetableCardEditor extends HTMLElement {
 
   /* ── Fire change to HA ── */
   _fire() {
-    clearTimeout(this._debounce);
-    this._debounce = setTimeout(() => {
-      this._isFiring = true;
-      this._config = { ...this._config, kids: this._kids, subjects: this._subjects };
-      this.dispatchEvent(new CustomEvent("config-changed", {
-        detail: { config: this._config }, bubbles:true, composed:true,
-      }));
-      // Reset flag after HA had time to call setConfig back
-      setTimeout(() => { this._isFiring = false; }, 100);
-    }, 400);
+    this._config = { ...this._config, kids: this._kids, subjects: this._subjects };
+    this.dispatchEvent(new CustomEvent("config-changed", {
+      detail: { config: this._config }, bubbles:true, composed:true,
+    }));
   }
 
   /* ── Schedule mutations ── */
@@ -510,6 +498,7 @@ class TimetableCardEditor extends HTMLElement {
   _attachEvents(root) {
     root.addEventListener("click",     e=>this._onClick(e));
     root.addEventListener("input",     e=>this._onInput(e));
+    root.addEventListener("blur",      e=>this._onBlur(e), true); // capture phase for blur
     root.addEventListener("change",    e=>this._onChange(e));
     root.addEventListener("dragstart", e=>this._onDragStart(e));
     root.addEventListener("drop",      e=>this._onDrop(e));
@@ -579,24 +568,10 @@ class TimetableCardEditor extends HTMLElement {
     else if (a==="import") { this.shadowRoot.querySelector("[data-action='import-file']")?.click(); }
   }
 
+  // _onInput only handles color picker (fires continuously by design)
   _onInput(e) {
     const el=e.target.closest("[data-action]"); if(!el) return;
     const a=el.dataset.action, i=parseInt(el.dataset.idx);
-    const kid=this._kids[this._activeKid];
-
-    if (a==="kid-name")  { kid.name=el.value; this._fire(); return; }
-    if (a==="kid-age")   { kid.age=el.value;  this._fire(); return; }
-    if (a==="slot-time") { kid.slots[i]={...kid.slots[i],time:el.value}; this._fire(); return; }
-    if (a==="slot-end")  { kid.slots[i]={...kid.slots[i],end:el.value};  this._fire(); return; }
-    if (a==="subj-name") {
-      this._subjects[i].name=el.value;
-      this._subjectMap=buildSubjectMap(this._subjects);
-      // Update preview chip live without full re-render
-      const chip=this.shadowRoot.querySelectorAll(".preview-chip")[i];
-      if(chip) chip.textContent=el.value||"?";
-      this._fire();
-      return;
-    }
     if (a==="subj-color") {
       this._subjects[i].color=el.value;
       this._subjectMap=buildSubjectMap(this._subjects);
@@ -606,8 +581,29 @@ class TimetableCardEditor extends HTMLElement {
       const chip=this.shadowRoot.querySelectorAll(".preview-chip")[i];
       if(sw)   { sw.style.background=sc.bg; sw.style.borderColor=sc.border; }
       if(chip) { chip.style.background=sc.bg; chip.style.color=sc.text; chip.style.borderColor=sc.border; }
+    }
+  }
+
+  // _onBlur fires when user leaves a text field — saves without interrupting typing
+  _onBlur(e) {
+    const el=e.target.closest("[data-action]"); if(!el) return;
+    const a=el.dataset.action, i=parseInt(el.dataset.idx);
+    const kid=this._kids[this._activeKid];
+
+    if (a==="kid-name")  { kid.name=el.value; this._fire(); }
+    if (a==="kid-age")   { kid.age=el.value;  this._fire(); }
+    if (a==="slot-time") { kid.slots[i]={...kid.slots[i],time:el.value}; this._fire(); }
+    if (a==="slot-end")  { kid.slots[i]={...kid.slots[i],end:el.value};  this._fire(); }
+    if (a==="subj-name") {
+      this._subjects[i].name=el.value;
+      this._subjectMap=buildSubjectMap(this._subjects);
       this._fire();
-      return;
+      this._render(); // re-render to update palette chips with new name
+    }
+    if (a==="subj-color") {
+      this._subjects[i].color=el.value;
+      this._subjectMap=buildSubjectMap(this._subjects);
+      this._fire();
     }
   }
 
