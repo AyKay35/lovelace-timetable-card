@@ -2,10 +2,10 @@
  * Timetable Card for Home Assistant
  * https://github.com/ay-kay/lovelace-timetable-card
  * @license MIT
- * @version 2.0.0
+ * @version 2.0.1
  */
 
-const CARD_VERSION = "2.0.0";
+const CARD_VERSION = "2.0.1";
 console.info(
   `%c TIMETABLE-CARD %c v${CARD_VERSION} `,
   "background:#60a5fa;color:white;font-weight:900;padding:2px 4px;border-radius:4px 0 0 4px",
@@ -320,10 +320,15 @@ class TimetableCardEditor extends HTMLElement {
     this._showEmoji  = false;
     this._showSlots  = false;
     this._debounce   = null;
+    this._isFiring   = false;
   }
 
   setConfig(config) {
-    // Only reset state on first load, not on every HA update
+    // If we fired the change ourselves, skip re-render to preserve input focus
+    if (this._isFiring) {
+      this._config = config;
+      return;
+    }
     this._config     = config;
     this._kids       = JSON.parse(JSON.stringify(config.kids     || DEFAULT_KIDS));
     this._subjects   = JSON.parse(JSON.stringify(config.subjects || DEFAULT_SUBJECTS));
@@ -337,11 +342,14 @@ class TimetableCardEditor extends HTMLElement {
   _fire() {
     clearTimeout(this._debounce);
     this._debounce = setTimeout(() => {
+      this._isFiring = true;
       this._config = { ...this._config, kids: this._kids, subjects: this._subjects };
       this.dispatchEvent(new CustomEvent("config-changed", {
         detail: { config: this._config }, bubbles:true, composed:true,
       }));
-    }, 250);
+      // Reset flag after HA had time to call setConfig back
+      setTimeout(() => { this._isFiring = false; }, 100);
+    }, 400);
   }
 
   /* ── Schedule mutations ── */
@@ -576,17 +584,18 @@ class TimetableCardEditor extends HTMLElement {
     const a=el.dataset.action, i=parseInt(el.dataset.idx);
     const kid=this._kids[this._activeKid];
 
-    if (a==="kid-name")  { kid.name=el.value; this._fire(); }
-    if (a==="kid-age")   { kid.age=el.value;  this._fire(); }
-    if (a==="slot-time") { kid.slots[i]={...kid.slots[i],time:el.value}; this._fire(); }
-    if (a==="slot-end")  { kid.slots[i]={...kid.slots[i],end:el.value};  this._fire(); }
+    if (a==="kid-name")  { kid.name=el.value; this._fire(); return; }
+    if (a==="kid-age")   { kid.age=el.value;  this._fire(); return; }
+    if (a==="slot-time") { kid.slots[i]={...kid.slots[i],time:el.value}; this._fire(); return; }
+    if (a==="slot-end")  { kid.slots[i]={...kid.slots[i],end:el.value};  this._fire(); return; }
     if (a==="subj-name") {
       this._subjects[i].name=el.value;
       this._subjectMap=buildSubjectMap(this._subjects);
-      // Update preview chip live
+      // Update preview chip live without full re-render
       const chip=this.shadowRoot.querySelectorAll(".preview-chip")[i];
       if(chip) chip.textContent=el.value||"?";
       this._fire();
+      return;
     }
     if (a==="subj-color") {
       this._subjects[i].color=el.value;
@@ -598,6 +607,7 @@ class TimetableCardEditor extends HTMLElement {
       if(sw)   { sw.style.background=sc.bg; sw.style.borderColor=sc.border; }
       if(chip) { chip.style.background=sc.bg; chip.style.color=sc.text; chip.style.borderColor=sc.border; }
       this._fire();
+      return;
     }
   }
 
