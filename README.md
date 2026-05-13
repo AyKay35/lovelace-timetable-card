@@ -3,24 +3,23 @@
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/hacs/integration)
 [![Version](https://img.shields.io/github/v/release/ay-kay/lovelace-timetable-card)](https://github.com/ay-kay/lovelace-timetable-card/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Stars](https://img.shields.io/github/stars/ay-kay/lovelace-timetable-card?style=flat)](https://github.com/ay-kay/lovelace-timetable-card/stargazers)
 
 A beautiful, interactive school timetable card for [Home Assistant](https://www.home-assistant.io/) — perfect for families with multiple children at different schools.
-
-![Timetable Card Preview](https://raw.githubusercontent.com/ay-kay/lovelace-timetable-card/main/docs/preview.png)
 
 ---
 
 ## ✨ Features
 
 - 📅 **Weekly timetable** — full Monday–Friday overview at a glance
-- 👨‍👩‍👧‍👦 **Multiple children** — one tab per child, each with their own color theme and emoji
+- 👨‍👩‍👧‍👦 **Multiple children** — one tab per child, personal color theme and emoji
 - 🏫 **Per-child time slots** — different schools, different schedules, no problem
-- 🎨 **Fully customizable subjects** — define your own subjects with individual colors via the visual editor
-- ✏️ **Visual editor** — configure everything without touching YAML: children, time slots, subjects, and the full timetable grid
+- 🎨 **Fully customizable subjects** — define your own subjects with individual colors
+- ✏️ **Visual editor** — configure everything without touching YAML
 - 🖱️ **Drag & drop + tap-to-place** — fill in the timetable intuitively
-- 💾 **Stored in HA config** — data lives in your Lovelace configuration, backed up with Home Assistant
-- 📱 **Tablet-optimized** — designed for wall-mounted tablets running Fully Kiosk Browser or similar
-- 🌙 **Dark mode support** — respects Home Assistant's theme variables
+- 💾 **Stored in HA config** — backed up automatically with Home Assistant
+- 📱 **Tablet-optimized** — designed for wall-mounted tablets
+- 🌙 **Dark mode support** — respects Home Assistant theme variables
 
 ---
 
@@ -28,83 +27,68 @@ A beautiful, interactive school timetable card for [Home Assistant](https://www.
 
 ### Via HACS (recommended)
 
-1. Open **HACS** in your Home Assistant instance
-2. Go to **Frontend** → click the three-dot menu (⋮) → **Custom repositories**
-3. Enter the repository URL and select category **Dashboard**:
+1. Open **HACS** → **Frontend** → three-dot menu (⋮) → **Custom repositories**
+2. Add:
    ```
    https://github.com/ay-kay/lovelace-timetable-card
    ```
-4. Click **Add** → find **Timetable Card** in the list → **Download**
-5. Reload your browser (hard refresh: `Ctrl+Shift+R`)
+   Category: **Dashboard**
+3. Find **Timetable Card** → **Download**
+4. Hard-refresh your browser (`Ctrl+Shift+R`)
 
 ### Manual
 
 1. Download `timetable-card.js` from the [latest release](https://github.com/ay-kay/lovelace-timetable-card/releases)
-2. Copy it to `/config/www/timetable-card.js`
-3. Add it as a Lovelace resource:
-   - Go to **Settings → Dashboards → three-dot menu → Resources**
-   - Add `/local/timetable-card.js` as **JavaScript module**
-4. Reload your browser
+2. Copy to `/config/www/timetable-card.js`
+3. Add as Lovelace resource: `/local/timetable-card.js` (JavaScript module)
 
 ---
 
-## 🚀 Usage
+## 🚀 Quick Start
 
-### Adding the card
+1. Add card → search **Timetable**
+2. Card appears with example data
+3. Click card → **Edit** to open the visual editor
+4. Add your children, set time slots, fill in the timetable
 
-1. Edit your dashboard → **Add card** → search for **Timetable Card**
-2. The card will be added with example data
-3. Click the card to open the editor
-
-### Using the visual editor
-
-The editor is split into two areas:
-
-#### 👶 Children tabs (left side)
-
-Each child gets their own tab. Click a tab to switch to that child's configuration.
-
-| Element       | What it does                                       |
-| ------------- | -------------------------------------------------- |
-| Emoji (click) | Opens emoji picker                                 |
-| Name field    | Edit child's name — saved when you leave the field |
-| Class field   | Edit class/grade — saved when you leave the field  |
-| Color dots    | Change the color theme                             |
-| ⏱ Zeiten      | Toggle the time slot editor                        |
-| Löschen       | Remove this child                                  |
-| **+** button  | Add a new child                                    |
-
-#### ⏱ Time slots
-
-Each child can have completely independent time slots — useful when children attend different schools with different schedules. Just click **⏱ Zeiten** to expand the slot editor.
-
-#### 📋 Timetable grid
-
-Fill in the timetable by:
-
-- **Tap-to-place**: tap a subject in the palette → tap a cell in the grid
-- **Drag & drop**: drag a subject from the palette directly into a cell
-- **Remove**: tap the × on a filled cell, or tap it to pick it up and re-place it elsewhere
-
-#### 🎨 Subjects tab
-
-Click the **🎨 Fächer** tab to manage subjects:
-
-- Click the colored circle to change a subject's color
-- Edit the name directly
-- Add or remove subjects
-- A live preview shows all subject chips with their colors
+No YAML required. Everything works through the visual editor.
 
 ---
 
-## ⚙️ YAML Configuration
+## 🖼️ Visual Editor
 
-While the visual editor handles everything, here is the full YAML structure for reference or manual setup:
+The editor is split into tabs — one per child — plus a **🎨 Fächer** tab for subject management.
+
+### Per-child configuration
+
+| Element      | Action                                           |
+| ------------ | ------------------------------------------------ |
+| Emoji        | Click to open emoji picker                       |
+| Name / Class | Click to edit, saves on blur (Tab or click away) |
+| Color dots   | Click to change color theme                      |
+| ⏱ Zeiten     | Toggle time slot editor                          |
+| **+** button | Add a new child                                  |
+
+### Filling in the timetable
+
+- **Tap-to-place**: tap a subject in the palette → tap a cell
+- **Drag & drop**: drag from palette directly into a cell
+- **Remove**: tap the × on a filled cell
+
+### Managing subjects (🎨 Fächer tab)
+
+- Click the colored circle to open a color picker
+- Edit name directly in the field
+- Add / remove subjects freely
+- Live preview shows all chips with their colors
+
+---
+
+## ⚙️ Full YAML Reference
 
 ```yaml
 type: custom:timetable-card
 
-# Subjects — define all subjects and their colors here
 subjects:
   - name: Mathe
     color: "#1d4ed8"
@@ -114,17 +98,19 @@ subjects:
     color: "#065f46"
   - name: Sport
     color: "#5b21b6"
-  # Add as many as you need...
+  - name: KlaRa # custom school-specific subjects
+    color: "#7e22ce"
+  - name: LZ
+    color: "#14532d"
+  # add as many as you need...
 
-# Children
 kids:
   - name: Lena
     age: 3. Klasse
     emoji: "🌸"
-    color: "#f472b6"
-    accent: "#be185d"
-    light: "#fdf2f8"
-    # Time slots for THIS child's school
+    color: "#f472b6" # tab accent color
+    accent: "#be185d" # darker shade for text
+    light: "#fdf2f8" # light background for active tab
     slots:
       - slot: 1
         time: "08:00"
@@ -138,6 +124,10 @@ kids:
       - slot: 4
         time: "10:35"
         end: "11:20"
+      # afternoon lessons:
+      # - slot: 7
+      #   time: "14:00"
+      #   end: "14:45"
     schedule:
       Mo:
         - slot: 1
@@ -155,6 +145,8 @@ kids:
       Do:
         - slot: 1
           subject: Kunst
+        - slot: 2
+          subject: Musik
       Fr:
         - slot: 1
           subject: Deutsch
@@ -167,105 +159,70 @@ kids:
     color: "#60a5fa"
     accent: "#1d4ed8"
     light: "#eff6ff"
-    slots:
+    slots: # Jonas's school starts earlier
       - slot: 1
         time: "07:55"
         end: "08:40"
       - slot: 2
         time: "08:40"
         end: "09:25"
+      - slot: 3
+        time: "09:45"
+        end: "10:30"
     schedule:
       Mo:
         - slot: 1
           subject: Englisch
+        - slot: 2
+          subject: Mathe
       Di: []
       Mi: []
       Do: []
       Fr: []
 ```
 
-### Adding afternoon lessons
+### Child color presets
 
-Simply add more slots with higher numbers:
-
-```yaml
-slots:
-  - slot: 1
-    time: "08:00"
-    end: "08:45"
-  - slot: 2
-    time: "08:45"
-    end: "09:30"
-  # ... morning slots ...
-  - slot: 7
-    time: "14:00"
-    end: "14:45"
-  - slot: 8
-    time: "14:45"
-    end: "15:30"
-```
-
-Dashed break lines are shown automatically after slots 2 and 4.
+| Color     | `color`   | `accent`  | `light`   |
+| --------- | --------- | --------- | --------- |
+| 🔴 Red    | `#f87171` | `#b91c1c` | `#fff1f2` |
+| 🩷 Pink   | `#f472b6` | `#be185d` | `#fdf2f8` |
+| 🔵 Blue   | `#60a5fa` | `#1d4ed8` | `#eff6ff` |
+| 🟢 Green  | `#4ade80` | `#15803d` | `#f0fdf4` |
+| 🟠 Orange | `#fb923c` | `#c2410c` | `#fff7ed` |
+| 🟣 Purple | `#a78bfa` | `#6d28d9` | `#f5f3ff` |
+| 🟡 Yellow | `#fbbf24` | `#b45309` | `#fffbeb` |
+| 🩵 Teal   | `#2dd4bf` | `#0f766e` | `#f0fdfa` |
 
 ---
 
 ## 💾 Backup & Restore
 
-Your timetable data is stored directly in the Lovelace configuration and is automatically included in your Home Assistant backups.
+Timetable data is stored in the Lovelace config and included in every HA backup automatically.
 
-For manual backups, use the **↓ Backup exportieren** button in the editor to download a JSON file. Restore it via **↑ Backup importieren**.
-
----
-
-## 🎨 Subject Color Reference
-
-The card automatically generates a light background and border color from each subject's single base color. You only need to define one color per subject.
-
-Some suggested colors:
-
-| Subject    | Color     |
-| ---------- | --------- |
-| Mathe      | `#1d4ed8` |
-| Deutsch    | `#854d0e` |
-| Englisch   | `#065f46` |
-| Sport      | `#5b21b6` |
-| Musik      | `#991b1b` |
-| Kunst      | `#9d174d` |
-| Geschichte | `#9f1239` |
-| Biologie   | `#166534` |
-| Physik     | `#075985` |
-| Chemie     | `#92400e` |
-| Informatik | `#3730a3` |
-
----
-
-## 🖼️ Screenshots
-
-| View mode                                                                                    | Editor                                                                                           |
-| -------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
-| ![View](https://raw.githubusercontent.com/ay-kay/lovelace-timetable-card/main/docs/view.png) | ![Editor](https://raw.githubusercontent.com/ay-kay/lovelace-timetable-card/main/docs/editor.png) |
+For manual backup: **↓ Backup exportieren** in the editor downloads a JSON file.
+To restore: **↑ Backup importieren** reads it back in.
 
 ---
 
 ## 🗺️ Roadmap
 
 - [ ] English language support
-- [ ] Configurable break lines (currently fixed after slots 2 and 4)
+- [ ] Configurable break line positions (currently fixed after slots 2 and 4)
 - [ ] Week A/B alternating schedules
 - [ ] Holiday / no-school day indicators
-- [ ] Color picker for child theme colors in editor
 
 ---
 
 ## 🤝 Contributing
 
-Pull requests are welcome! Please open an issue first to discuss what you would like to change.
+Pull requests are welcome! Please open an issue first to discuss what you'd like to change.
 
 ---
 
 ## ☕ Support
 
-If this card saves you time and you'd like to say thanks:
+If this card is useful for your family:
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/aykay35)
 

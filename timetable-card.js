@@ -2,10 +2,10 @@
  * Timetable Card for Home Assistant
  * https://github.com/ay-kay/lovelace-timetable-card
  * @license MIT
- * @version 2.0.3
+ * @version 2.0.4
  */
 
-const CARD_VERSION = "2.0.3";
+const CARD_VERSION = "2.0.4";
 console.info(
   `%c TIMETABLE-CARD %c v${CARD_VERSION} `,
   "background:#60a5fa;color:white;font-weight:900;padding:2px 4px;border-radius:4px 0 0 4px",

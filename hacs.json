@@ -1,7 +1,7 @@
 {
   "name": "Timetable Card",
-  "description": "An interactive family timetable card for Home Assistant. Manage school schedules for multiple children with drag & drop editing.",
-  "render_readme": true,
+  "description": "Interactive family school timetable card for Home Assistant — manage multiple children, drag & drop editing, fully customizable subjects.",
+  "render_readme": false,
   "filename": "timetable-card.js",
   "content_in_root": true
 }
