@@ -2,10 +2,10 @@
  * Timetable Card for Home Assistant
  * https://github.com/ay-kay/lovelace-timetable-card
  * @license MIT
- * @version 2.0.4
+ * @version 2.0.5
  */
 
-const CARD_VERSION = "2.0.4";
+const CARD_VERSION = "2.0.5";
 console.info(
   `%c TIMETABLE-CARD %c v${CARD_VERSION} `,
   "background:#60a5fa;color:white;font-weight:900;padding:2px 4px;border-radius:4px 0 0 4px",
@@ -385,12 +385,10 @@ class TimetableCardEditor extends HTMLElement {
             ${k.name}
           </button>`).join("")}
         <button class="etab-add" data-action="add-kid" title="Kind hinzufügen">+</button>
-        <button class="etab etab-subjects ${this._section==="subjects"?"active":""}" data-action="tab-subjects">
-          🎨 Fächer
-        </button>
+
       </div>
 
-      ${this._section==="subjects" ? this._buildSubjectsPanel() : this._buildSchedulePanel(kid)}
+      ${this._buildSchedulePanel(kid)}
     `;
   }
 
@@ -457,19 +455,9 @@ class TimetableCardEditor extends HTMLElement {
         ${this._selected?`<button class="clear-sel" data-action="clear-sel">✕ Auswahl aufheben</button>`:""}
       </div>
 
-      <!-- Export / Import -->
-      <div class="actions-bar">
-        <button class="action-btn" data-action="export">↓ Backup exportieren</button>
-        <button class="action-btn" data-action="import">↑ Backup importieren</button>
-        <input type="file" accept=".json" data-action="import-file" style="display:none">
-      </div>
-    `;
-  }
-
-  _buildSubjectsPanel() {
-    return `
+      <!-- Subjects management — always visible below palette -->
       <div class="subjects-panel">
-        <h4>FÄCHER VERWALTEN</h4>
+        <h4>🎨 FÄCHER VERWALTEN</h4>
         <div class="subj-list">
           ${this._subjects.map((s,i)=>{
             const sc=buildSubjectStyle(s.color||"#64748b");
@@ -478,7 +466,7 @@ class TimetableCardEditor extends HTMLElement {
                 <div class="subj-swatch" style="background:${sc.bg};border-color:${sc.border}" title="Farbe">
                   <input type="color" value="${s.color||"#64748b"}" data-action="subj-color" data-idx="${i}">
                 </div>
-                <input class="subj-name" value="${s.name||""}" placeholder="Fachname" data-action="subj-name" data-idx="${i}" tabindex="${10 + i}">
+                <input class="subj-name" value="${s.name||""}" placeholder="Fachname" data-action="subj-name" data-idx="${i}" tabindex="${10+i}">
                 <button class="subj-del" data-action="subj-del" data-idx="${i}">×</button>
               </div>`;
           }).join("")}
@@ -491,8 +479,17 @@ class TimetableCardEditor extends HTMLElement {
           }).join("")}
         </div>
       </div>
+
+      <!-- Export / Import -->
+      <div class="actions-bar">
+        <button class="action-btn" data-action="export">↓ Backup exportieren</button>
+        <button class="action-btn" data-action="import">↑ Backup importieren</button>
+        <input type="file" accept=".json" data-action="import-file" style="display:none">
+      </div>
     `;
   }
+
+
 
   /* ── Events ── */
   _attachEvents(root) {
@@ -513,7 +510,7 @@ class TimetableCardEditor extends HTMLElement {
       this._activeKid=parseInt(el.dataset.idx); this._section="schedule";
       this._selected=null; this._showEmoji=false; this._showSlots=false; this._render();
     }
-    else if (a==="tab-subjects") { this._section="subjects"; this._render(); }
+
     else if (a==="add-kid") {
       const preset=COLOR_PRESETS[this._kids.length%COLOR_PRESETS.length];
       this._kids.push({name:"Neues Kind",age:"1. Klasse",emoji:"⭐",...preset,
