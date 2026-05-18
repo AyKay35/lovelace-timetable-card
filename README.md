@@ -1,9 +1,9 @@
 # 📅 Timetable Card for Home Assistant
 
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/hacs/integration)
-[![Version](https://img.shields.io/github/v/release/ay-kay/lovelace-timetable-card)](https://github.com/ay-kay/lovelace-timetable-card/releases)
+[![Version](https://img.shields.io/github/v/release/AyKay35/lovelace-timetable-card)](https://github.com/AyKay35/lovelace-timetable-card/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Stars](https://img.shields.io/github/stars/ay-kay/lovelace-timetable-card?style=flat)](https://github.com/ay-kay/lovelace-timetable-card/stargazers)
+[![Stars](https://img.shields.io/github/stars/AyKay35/lovelace-timetable-card?style=flat)](https://github.com/AyKay35/lovelace-timetable-card/stargazers)
 
 A beautiful, interactive school timetable card for [Home Assistant](https://www.home-assistant.io/) — perfect for families with multiple children at different schools.
 
@@ -30,7 +30,7 @@ A beautiful, interactive school timetable card for [Home Assistant](https://www.
 1. Open **HACS** → **Frontend** → three-dot menu (⋮) → **Custom repositories**
 2. Add:
    ```
-   https://github.com/ay-kay/lovelace-timetable-card
+   https://github.com/AyKay35/lovelace-timetable-card
    ```
    Category: **Dashboard**
 3. Find **Timetable Card** → **Download**
@@ -38,7 +38,7 @@ A beautiful, interactive school timetable card for [Home Assistant](https://www.
 
 ### Manual
 
-1. Download `timetable-card.js` from the [latest release](https://github.com/ay-kay/lovelace-timetable-card/releases)
+1. Download `timetable-card.js` from the [latest release](https://github.com/AyKay35/lovelace-timetable-card/releases)
 2. Copy to `/config/www/timetable-card.js`
 3. Add as Lovelace resource: `/local/timetable-card.js` (JavaScript module)
 
@@ -230,4 +230,4 @@ If this card is useful for your family:
 
 ## 📄 License
 
-MIT © [ay-kay](https://github.com/ay-kay)
+MIT © [AyKay35](https://github.com/AyKay35)

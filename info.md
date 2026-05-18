@@ -128,4 +128,4 @@ If this card is useful for your family, consider buying me a coffee:
 
 ## 📄 Full Documentation
 
-For the complete documentation including the full YAML reference, see the [README on GitHub](https://github.com/ay-kay/lovelace-timetable-card#readme).
+For the complete documentation including the full YAML reference, see the [README on GitHub](https://github.com/AyKay35/lovelace-timetable-card#readme).

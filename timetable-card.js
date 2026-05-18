@@ -1,11 +1,11 @@
 /**
  * Timetable Card for Home Assistant
- * https://github.com/ay-kay/lovelace-timetable-card
+ * https://github.com/AyKay35/lovelace-timetable-card
  * @license MIT
- * @version 2.0.5
+ * @version 2.0.6
  */
 
-const CARD_VERSION = "2.0.5";
+const CARD_VERSION = "2.0.6";
 console.info(
   `%c TIMETABLE-CARD %c v${CARD_VERSION} `,
   "background:#60a5fa;color:white;font-weight:900;padding:2px 4px;border-radius:4px 0 0 4px",
@@ -739,5 +739,5 @@ window.customCards.push({
   name:"Timetable Card",
   description:"Interactive family school timetable. Edit via the visual editor.",
   preview:true,
-  documentationURL:"https://github.com/ay-kay/lovelace-timetable-card",
+  documentationURL:"https://github.com/AyKay35/lovelace-timetable-card",
 });
